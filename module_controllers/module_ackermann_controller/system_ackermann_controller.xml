@@ -1,0 +1,8 @@
+<library path="platform_ackermann_controller">
+  <class name="platform_ackermann_controller/SystemAckermannController"
+         type="platform_ackermann_controller::SystemAckermannController" base_class_type="controller_interface::ChainableControllerInterface">
+  <description>
+    Steering controller for Ackermann (car-like) kinematics with two traction and four steering joints.
+  </description>
+  </class>
+</library>

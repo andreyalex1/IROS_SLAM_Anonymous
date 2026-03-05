@@ -1,0 +1,78 @@
+#ifndef System_ACKERMANN_CONTROLLER__System_ACKERMANN_CONTROLLER_HPP_
+#define System_ACKERMANN_CONTROLLER__System_ACKERMANN_CONTROLLER_HPP_
+
+#include <memory>
+
+#include "platform_ackermann_controller/visibility_control.h"
+#include "platform_ackermann_controller_parameters.hpp"
+#include "platform_steering_library/platform_steering_library.hpp"
+#include <sensor_msgs/msg/imu.hpp>
+
+namespace platform_ackermann_controller
+{
+// name constants for state interfaces
+static constexpr size_t STATE_STEER_FRONT_RIGHT_WHEEL = 0;
+static constexpr size_t STATE_STEER_FRONT_LEFT_WHEEL = 1;
+static constexpr size_t STATE_STEER_REAR_RIGHT_WHEEL = 2;
+static constexpr size_t STATE_STEER_REAR_LEFT_WHEEL = 3;
+static constexpr size_t STATE_TRACTION_FRONT_RIGHT_WHEEL = 4;
+static constexpr size_t STATE_TRACTION_FRONT_LEFT_WHEEL = 5;
+static constexpr size_t STATE_TRACTION_MIDDLE_RIGHT_WHEEL = 6;
+static constexpr size_t STATE_TRACTION_MIDDLE_LEFT_WHEEL = 7;
+static constexpr size_t STATE_TRACTION_REAR_RIGHT_WHEEL = 8;
+static constexpr size_t STATE_TRACTION_REAR_LEFT_WHEEL = 9;
+
+// name constants for command interfaces
+static constexpr size_t CMD_STEER_FRONT_RIGHT_WHEEL = 0;
+static constexpr size_t CMD_STEER_FRONT_LEFT_WHEEL = 1;
+static constexpr size_t CMD_STEER_REAR_RIGHT_WHEEL = 2;
+static constexpr size_t CMD_STEER_REAR_LEFT_WHEEL = 3;
+static constexpr size_t CMD_TRACTION_FRONT_RIGHT_WHEEL = 4;
+static constexpr size_t CMD_TRACTION_FRONT_LEFT_WHEEL = 5;
+static constexpr size_t CMD_TRACTION_MIDDLE_RIGHT_WHEEL = 6;
+static constexpr size_t CMD_TRACTION_MIDDLE_LEFT_WHEEL = 7;
+static constexpr size_t CMD_TRACTION_REAR_RIGHT_WHEEL = 8;
+static constexpr size_t CMD_TRACTION_REAR_LEFT_WHEEL = 9;
+
+// количество интерфейсов, которые будет требовать софтварный контроллер, от хардварного для составления
+// статистики (одометрии в данном случае)
+static constexpr size_t NR_STATE_ITFS = 10;
+// количество интерфейсов которые нужные хардварному контроллеру, чтобы передать от текущего (софтварного)
+// контроллера управляющие воздействия на двигатели
+static constexpr size_t NR_CMD_ITFS = 10;
+// количество интерфейсов для работы логики контроллера ( угловая скорость и линейная )
+static constexpr size_t NR_REF_ITFS = 2;
+
+class SystemAckermannController : public platform_steering_library::SystemSteeringLibrary
+{
+public:
+  SystemAckermannController();
+
+  System_ACKERMANN_CONTROLLER__VISIBILITY_PUBLIC controller_interface::CallbackReturn
+  configure_odometry() override;
+
+  System_ACKERMANN_CONTROLLER__VISIBILITY_PUBLIC void
+  initialize_implementation_parameter_listener() override;
+
+  System_ACKERMANN_CONTROLLER__VISIBILITY_PUBLIC void
+  imu_subscriber_callback(const sensor_msgs::msg::Imu::SharedPtr msg);
+
+  System_ACKERMANN_CONTROLLER__VISIBILITY_PUBLIC bool
+  update_odometry(const rclcpp::Duration & period) override;
+
+protected:
+  std::shared_ptr<platform_ackermann_controller::ParamListener> ackermann_param_listener_;
+  platform_ackermann_controller::Params ackermann_params_;
+
+  rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_subscriber;
+
+  tf2::Quaternion orientation;
+  tf2::Matrix3x3 orientation_matrix;
+
+  double current_roll;
+  double current_pitch;
+  double current_yaw;
+};
+}  // namespace platform_ackermann_controller
+
+#endif  // System_ACKERMANN_CONTROLLER__System_ACKERMANN_CONTROLLER_HPP_

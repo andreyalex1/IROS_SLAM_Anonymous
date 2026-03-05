@@ -1,0 +1,33 @@
+platform_ackermann_controller:
+  wheel_track:
+    {
+      type: double,
+      default_value: 0.0,
+      description: "Wheel track length. For details see: https://en.wikipedia.org/wiki/Wheelbase",
+      read_only: false,
+      validation: {
+        gt<>: [0.0]
+      }
+    }
+
+  half_wheelbase:
+    {
+      type: double,
+      default_value: 0.0,
+      description: "Distance between middle and front wheels/rear wheels - half of real length of wheelbase. For details see: https://en.wikipedia.org/wiki/Wheelbase",
+      read_only: false,
+      validation: {
+        gt<>: [0.0]
+      }
+    }
+
+  wheels_radius:
+    {
+      type: double,
+      default_value: 0.0,
+      description: "Wheels radius.",
+      read_only: false,
+      validation: {
+        gt<>: [0.0]
+      }
+    }
